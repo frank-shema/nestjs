@@ -14,18 +14,20 @@ import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './students.entity';
+import { ApiParam, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-type IdParam = { id: string };
-
+@ApiTags('students') // Group all student-related endpoints under "students" in Swagger
 @Controller('students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
-  /**
-   * Retrieve all students
-   * @returns Promise<Student[]> - Array of all students
-   */
   @Get()
+  @ApiOperation({ summary: 'Retrieve all students' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all students',
+    type: [Student],
+  })
   async findAll(): Promise<Student[]> {
     try {
       return await this.studentsService.findAll();
@@ -34,14 +36,16 @@ export class StudentsController {
     }
   }
 
-  /**
-   * Retrieve a single student by ID (UUID)
-   * @param id - The UUID of the student
-   * @returns Promise<Student> - The found student
-   * @throws NotFoundException if the student is not found
-   */
   @Get(':id')
-  async findOne(@Param() { id }: IdParam): Promise<Student> {
+  @ApiOperation({ summary: 'Retrieve a student by ID' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The UUID of the student',
+  })
+  @ApiResponse({ status: 200, description: 'The found student', type: Student })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  async findOne(@Param('id') id: string): Promise<Student> {
     try {
       return await this.studentsService.findOne(id);
     } catch (error) {
@@ -52,13 +56,14 @@ export class StudentsController {
     }
   }
 
-  /**
-   * Create a new student
-   * @param createStudentDto - DTO containing student data
-   * @returns Promise<Student> - The created student
-   * @throws BadRequestException if validation fails or creation fails
-   */
   @Post()
+  @ApiOperation({ summary: 'Create a new student' })
+  @ApiResponse({
+    status: 201,
+    description: 'The created student',
+    type: Student,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async create(@Body() createStudentDto: CreateStudentDto): Promise<Student> {
     try {
       return await this.studentsService.create(createStudentDto);
@@ -70,16 +75,21 @@ export class StudentsController {
     }
   }
 
-  /**
-   * Update an existing student
-   * @param id - The UUID of the student to update
-   * @param updateStudentDto - DTO containing partial student data
-   * @returns Promise<Student> - The updated student
-   * @throws NotFoundException if the student is not found
-   */
   @Put(':id')
+  @ApiOperation({ summary: 'Update a student by ID' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The UUID of the student',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The updated student',
+    type: Student,
+  })
+  @ApiResponse({ status: 404, description: 'Student not found' })
   async update(
-    @Param() { id }: IdParam,
+    @Param('id') id: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ): Promise<Student> {
     try {
@@ -92,14 +102,16 @@ export class StudentsController {
     }
   }
 
-  /**
-   * Delete a student by ID (UUID)
-   * @param id - The UUID of the student to delete
-   * @returns Promise<void>
-   * @throws NotFoundException if the student is not found
-   */
   @Delete(':id')
-  async remove(@Param() { id }: IdParam): Promise<void> {
+  @ApiOperation({ summary: 'Delete a student by ID' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The UUID of the student',
+  })
+  @ApiResponse({ status: 204, description: 'Student deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  async remove(@Param('id') id: string): Promise<void> {
     try {
       await this.studentsService.remove(id);
     } catch (error) {
