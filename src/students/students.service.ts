@@ -23,7 +23,13 @@ export class StudentsService {
   }
 
   async create(student: Partial<Student>): Promise<Student> {
-    return this.studentRepository.save(student);
+    if (!student.name || !student.age || !student.grade) {
+      throw new Error('Missing required fields: name, age, grade');
+    }
+
+    // Create and save the student entity
+    const newStudent = this.studentRepository.create(student); // Create an instance of the Student entity
+    return this.studentRepository.save(newStudent); // Save the student to the database
   }
 
   async update(id: number, student: Partial<Student>): Promise<void> {
