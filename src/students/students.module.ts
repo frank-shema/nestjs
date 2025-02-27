@@ -8,5 +8,6 @@ import { Student } from './students.entity';
   imports: [TypeOrmModule.forFeature([Student])],
   controllers: [StudentsController],
   providers: [StudentsService],
+  // this is nestjs
 })
 export class StudentsModule {}
