@@ -9,8 +9,8 @@ import { StudentsModule } from './students/students.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'your_password',
-      database: 'school_db',
+      password: 'Shema0987!!!',
+      database: 'nestcrud',
       autoLoadEntities: true,
       synchronize: true, // Auto-syncs schema (disable in production)
     }),
