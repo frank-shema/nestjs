@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Get,
@@ -14,7 +15,6 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './students.entity';
 
-// Define the type for the Param decorator to ensure type safety with UUIDs
 type IdParam = { id: string };
 
 @Controller('students')
@@ -35,7 +35,7 @@ export class StudentsController {
   }
 
   /**
-   * Retrieve a single student by ID
+   * Retrieve a single student by ID (UUID)
    * @param id - The UUID of the student
    * @returns Promise<Student> - The found student
    * @throws NotFoundException if the student is not found
@@ -93,7 +93,7 @@ export class StudentsController {
   }
 
   /**
-   * Delete a student by ID
+   * Delete a student by ID (UUID)
    * @param id - The UUID of the student to delete
    * @returns Promise<void>
    * @throws NotFoundException if the student is not found

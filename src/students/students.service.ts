@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Student } from './students.entity';
 
-// Define the interface for partial student data (optional fields for updates)
 interface PartialStudent {
   name?: string;
   age?: number;
@@ -21,7 +20,10 @@ export class StudentsService {
     private studentRepository: Repository<Student>,
   ) {}
 
-  // Fetch all students - throws error if retrieval fails
+  /**
+   * Fetch all students
+   * @returns Promise<Student[]> - Array of all students
+   */
   async findAll(): Promise<Student[]> {
     try {
       return await this.studentRepository.find();
@@ -30,7 +32,12 @@ export class StudentsService {
     }
   }
 
-  // Fetch a single student by ID - throws NotFoundException if not found
+  /**
+   * Fetch a single student by ID (UUID)
+   * @param id - The UUID of the student
+   * @returns Promise<Student> - The found student
+   * @throws NotFoundException if the student is not found
+   */
   async findOne(id: string): Promise<Student> {
     try {
       const student = await this.studentRepository.findOneBy({ id });
@@ -43,10 +50,14 @@ export class StudentsService {
     }
   }
 
-  // Create a new student - throws BadRequestException for invalid data
+  /**
+   * Create a new student
+   * @param studentData - Partial student data
+   * @returns Promise<Student> - The created student
+   * @throws BadRequestException if required fields are missing
+   */
   async create(studentData: PartialStudent): Promise<Student> {
     try {
-      // Validate required fields
       if (!studentData.name || !studentData.age || !studentData.grade) {
         throw new BadRequestException(
           'Missing required fields: name, age, grade',
@@ -60,7 +71,13 @@ export class StudentsService {
     }
   }
 
-  // Update an existing student - returns the updated student
+  /**
+   * Update an existing student
+   * @param id - The UUID of the student to update
+   * @param studentData - Partial student data for updates
+   * @returns Promise<Student> - The updated student
+   * @throws NotFoundException if the student is not found
+   */
   async update(id: string, studentData: PartialStudent): Promise<Student> {
     try {
       const student = await this.studentRepository.findOneBy({ id });
@@ -68,19 +85,23 @@ export class StudentsService {
         throw new NotFoundException(`Student with ID ${id} not found`);
       }
 
-      // Merge the new data into the existing student
       Object.assign(student, studentData);
       await this.studentRepository.save(student);
-      return student; // Return the updated student
+      return student;
     } catch (error: unknown) {
       this.handleError(error, `Failed to update student with ID ${id}`);
     }
   }
 
-  // Remove a student by ID - returns void
+  /**
+   * Delete a student by ID (UUID)
+   * @param id - The UUID of the student to delete
+   * @returns Promise<void>
+   * @throws NotFoundException if the student is not found
+   */
   async remove(id: string): Promise<void> {
     try {
-      const result = await this.studentRepository.delete(id);
+      const result = await this.studentRepository.delete({ id });
       if (result.affected === 0) {
         throw new NotFoundException(`Student with ID ${id} not found`);
       }
@@ -89,13 +110,12 @@ export class StudentsService {
     }
   }
 
-  // Centralized error handling function
   private handleError(error: unknown, message: string): never {
     if (
       error instanceof NotFoundException ||
       error instanceof BadRequestException
     ) {
-      throw error; // Re-throw NestJS exceptions directly
+      throw error;
     } else if (error instanceof Error) {
       throw new BadRequestException(`${message}: ${error.message}`);
     } else {
